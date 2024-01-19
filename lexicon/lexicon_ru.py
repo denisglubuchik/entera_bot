@@ -1,7 +1,7 @@
-bot_lexicon = {
+BOT_LEXICON = {
 
 }
 
-messages_templates = {
-
+LEXICON_COMMANDS = {
+    
 }

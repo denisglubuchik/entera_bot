@@ -1,5 +1,13 @@
-def is_admin():
+from aiogram.filters import BaseFilter
+
+
+class IsAdmin(BaseFilter):
     pass
 
-def is_date():
+
+class IsDate(BaseFilter):
+    pass
+
+
+class IsEmails(BaseFilter):
     pass
