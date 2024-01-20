@@ -1,11 +1,15 @@
 from aiogram import F, Router
 from aiogram.types import (Message, CallbackQuery, 
-                           InlineKeyboardButton, InlineKeyboardMarkup)
+                           InlineKeyboardButton, InlineKeyboardMarkup,
+                           ReplyKeyboardRemove)
 from aiogram.filters import Command, CommandStart, StateFilter
 from aiogram.fsm.state import default_state
+from aiogram.fsm.context import FSMContext
 from states.states import FillTemplate
-from filters.filters import IsDate, IsEmails
+from filters.filters import IsDate, IsEmails, IsDigitCallbackData
 from lexicon.lexicon_ru import BOT_LEXICON
+from db.db import templates_db
+from keyboards.keyboards import create_templates_kb
 
 
 router = Router()
@@ -27,39 +31,57 @@ async def cancel_command_default(message: Message):
 
 
 @router.message(Command(commands='cancel'), ~StateFilter(default_state))
-async def cancel_command_state(message: Message):
-    pass
+async def cancel_command_state(message: Message, state: FSMContext):
+    await message.answer(text=BOT_LEXICON['cancel_state'])
+    await state.clear()
 
 
-@router.message(Command(commands='new_message')) #добавить клаву с выбором темплейта
-async def new_message_command(message: Message):
+@router.message(Command(commands='templates'), StateFilter(default_state))
+async def templates_command(message: Message):
+    for template in templates_db:
+        await message.answer(text=f'<b>Шаблон {template}</b>\n'
+                            f'{templates_db[template]}')
+
+
+@router.message(Command(commands='new_message'), StateFilter(default_state)) #добавить клаву с выбором темплейта
+async def new_message_command(message: Message, state: FSMContext):
     await message.answer(text=BOT_LEXICON['new_message'],
-                         reply_markup=...)
+                         reply_markup=create_templates_kb(*templates_db))
+    await state.set_state(FillTemplate.choose_template)
 
 
-# @router.callback_query(StateFilter(FillTemplate.choose_template), ...)
-# async def choose_template(callback: CallbackQuery):
-#     pass
+@router.callback_query(StateFilter(FillTemplate.choose_template),
+                       IsDigitCallbackData())
+async def choose_template(callback: CallbackQuery, state: FSMContext):
+    await state.update_data(template=callback.data)
+    await callback.message.edit_text(
+        text=f'Вы выбрали шаблон {callback.data}',
+    )
+    await state.set_state(FillTemplate.fill_start_time)
+    await callback.message.answer(text=BOT_LEXICON['start_show'])
 
 
-# @router.message(StateFilter(FillTemplate.fill_start_time), IsDate())
-# async def start_time_sent(message: Message):
-#     pass
+@router.message(StateFilter(FillTemplate.fill_start_time), IsDate())
+async def start_time_sent(message: Message, state: FSMContext):
+    await state.update_data(start_time=message.text.strip('" '))
+    await message.answer(text=BOT_LEXICON['end_show'])
+    await state.set_state(FillTemplate.fill_end_time)
 
 
-# @router.message(StateFilter(FillTemplate.fill_start_time))
-# async def not_start_date(message: Message):
-#     pass
+@router.message(StateFilter(FillTemplate.fill_start_time))
+async def not_start_date(message: Message):
+    await message.answer(text=BOT_LEXICON['not_date'])
 
 
-# @router.message(StateFilter(FillTemplate.fill_end_time), IsDate()) #добавить клаву российским/иностранным
-# async def end_time_sent(message: Message):
-#     pass
+@router.message(StateFilter(FillTemplate.fill_end_time), IsDate()) #добавить клаву российским/иностранным (true если иностранным)
+async def end_time_sent(message: Message, state: FSMContext):
+    await state.update_data(end_time=message.text.strip('" '))
+    await message.answer(text=BOT_LEXICON['russian/foreign'])
 
 
-# @router.message(StateFilter(FillTemplate.fill_end_time))
-# async def not_end_date(message: Message):
-#     pass
+@router.message(StateFilter(FillTemplate.fill_end_time))
+async def not_end_date(message: Message):
+    await message.answer(text=BOT_LEXICON['not_date'])
 
 
 # @router.callback_query(StateFilter(FillTemplate.fill_where_users_from), ...) #добавить клаву про триальных юзеров
