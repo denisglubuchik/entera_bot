@@ -1,0 +1,16 @@
+version: '3'
+services: 
+
+  postgresql:
+    container_name: postgres
+    image: postgres:9.6.12-alpine
+    environment:
+      POSTGRES_USER: sqluser
+      POSTGRES_PASSWORD: sqlpass
+      POSTGRES_DB: psql_db
+    volumes:
+      - ./postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgresql/data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+      

@@ -43,7 +43,7 @@ async def templates_command(message: Message):
                             f'{templates_db[template]}')
 
 
-@router.message(Command(commands='new_message'), StateFilter(default_state)) #добавить клаву с выбором темплейта
+@router.message(Command(commands='new_message'), StateFilter(default_state))
 async def new_message_command(message: Message, state: FSMContext):
     await message.answer(text=BOT_LEXICON['new_message'],
                          reply_markup=create_templates_kb(*templates_db))
