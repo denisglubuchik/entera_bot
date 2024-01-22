@@ -17,6 +17,21 @@ create table if not exist broadcast_message
     message_type   text      default 'POLL'::text not null,
     "foreign"      boolean   default false        not null
 );
+
+create table if not exist templates
+(
+  id uuid default get_random_uuid() not null primary key,
+  title text not null,
+  content text not null
+);
+
+create table if not exist bot_users
+(
+  id uuid default get_random_uuid() not null primary ke,
+  username text not null,
+  tg_id bigint unique
+)
+
 INSERT INTO public.broadcast_message (id, title, content, show_to_trial, start_date, finish_date, include_emails, exclude_emails, created_date, modified_date, version, creator_id, message_type, "foreign") VALUES ('395c639a-4044-4b2f-b35b-4e795a9fee24', 'Test message #2', '<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/1C_Company_logo.svg/1200px-1C_Company_logo.svg.png" alt="Italian Trulli">', true, '2021-12-10 16:49:16.000000', '2021-12-20 16:49:18.000000', '["ts@sel-be.ru", "gorbachev.rtm@gmail.com"]', null, '2021-12-10 13:51:04.011203', '2021-12-10 13:51:04.011203', 1, null, 'POLL', false);
 INSERT INTO public.broadcast_message (id, title, content, show_to_trial, start_date, finish_date, include_emails, exclude_emails, created_date, modified_date, version, creator_id, message_type, "foreign") VALUES ('a05b89d4-6a5f-4145-88fe-76174157ebee', 'Test message #1', e'<a href="https://entera.atlassian.net/browse/E1C-294">Ссылка на задачу</a>
 И простой текст', true, '2021-12-10 16:49:16.000000', '2022-12-20 16:49:18.000000', '["ts@sel-be.ru", "gorbachev.rtm@gmail.com"]', null, '2021-12-10 13:51:04.011203', '2021-12-10 13:51:04.011203', 1, null, 'POLL', false);

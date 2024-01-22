@@ -11,3 +11,31 @@ def create_templates_kb(*args) -> InlineKeyboardMarkup:
             callback_data=str(button)
         ), width=2)
     return kb_builder.as_markup()
+
+
+def create_rus_for_kb() -> InlineKeyboardMarkup:
+    kb_builder = InlineKeyboardBuilder()
+
+    kb_builder.row(InlineKeyboardButton(
+        text='Российским',
+        callback_data='False'
+    ), InlineKeyboardButton(
+        text='Иностранным',
+        callback_data='True'
+    ), width=2)
+
+    return kb_builder.as_markup()
+
+
+def create_trial_kb() -> InlineKeyboardMarkup:
+    kb_builder = InlineKeyboardBuilder()
+
+    kb_builder.row(InlineKeyboardButton(
+        text='Да',
+        callback_data='True'
+    ), InlineKeyboardButton(
+        text='Нет',
+        callback_data='False'
+    ), width=2)
+
+    return kb_builder.as_markup()
