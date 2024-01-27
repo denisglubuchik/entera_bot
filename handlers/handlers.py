@@ -39,7 +39,7 @@ async def cancel_command_state(message: Message, state: FSMContext):
 async def templates_command(message: Message):
     templates = SyncOrm.select_templates()
     for template in templates:
-        await message.answer(text=f'<b>Шаблон {template[1]}</b>\n'
+        await message.answer(text=f'Шаблон {template[1]}\n'
                                   f'{template[2]}')
 
 
