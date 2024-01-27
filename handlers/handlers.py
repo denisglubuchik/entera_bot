@@ -6,7 +6,6 @@ from aiogram.fsm.context import FSMContext
 from states.states import FillTemplate, NewTemplate
 from filters.filters import IsDate, IsEmails, IsUUID
 from lexicon.lexicon_ru import BOT_LEXICON
-from db.db import user_db
 from db.orm import SyncOrm
 from keyboards.keyboards import (create_templates_kb, create_rus_for_kb,
                                  create_trial_kb)
@@ -112,9 +111,9 @@ async def not_end_date(message: Message):
 
 
 @router.callback_query(StateFilter(FillTemplate.fill_where_users_from),
-                       F.data.in_(['True', 'False']))
+                       F.data.in_(['1', '0']))  # true or false
 async def where_users_from(callback: CallbackQuery, state: FSMContext):
-    await state.update_data(foreign=bool(callback.data))
+    await state.update_data(foreign=bool(int(callback.data)))
     await callback.message.edit_text(
         text=f'Вы выбрали показывать '
         f'{"иностранным" if callback.data == "True" else "российским"}'
@@ -126,9 +125,9 @@ async def where_users_from(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(StateFilter(FillTemplate.fill_trial_users),
-                       F.data.in_(['True', 'False']))
+                       F.data.in_(['1', '0']))  # true or false
 async def trial_users(callback: CallbackQuery, state: FSMContext):
-    await state.update_data(trial=bool(callback.data))
+    await state.update_data(trial=bool(int(callback.data)))
     await callback.message.edit_text(
         text=f'Вы выбрали {"не" if callback.data == "False" else ""}'
         ' показывать триальным пользователям'
@@ -141,12 +140,13 @@ async def trial_users(callback: CallbackQuery, state: FSMContext):
 async def include_emails(message: Message, state: FSMContext):
     if message.text.lower().strip() != 'всем':
         await state.update_data(include_emails=message.text.split(', '),
-                                exclude_emails=0)
-        user_db[message.from_user.id] = await state.get_data()
+                                exclude_emails=None)
+        new_message = await state.get_data()
+        SyncOrm.insert_new_message(new_message)
         await state.clear()
         await message.answer(text=BOT_LEXICON['successful_end'])
     else:
-        await state.update_data(include_emails=0)
+        await state.update_data(include_emails=None)
         await message.answer(text=BOT_LEXICON['exclude_emails'])
         await state.set_state(FillTemplate.fill_exclude_emails)
 
@@ -161,9 +161,10 @@ async def exclude_emails(message: Message, state: FSMContext):
     if message.text.lower().strip() != 'нет':
         await state.update_data(exclude_emails=message.text.split(', '))
     else:
-        await state.update_data(exclude_emails=0)
+        await state.update_data(exclude_emails=None)
 
-    user_db[message.from_user.id] = await state.get_data()
+    new_message = await state.get_data()
+    SyncOrm.insert_new_message(new_message)
     await state.clear()
     await message.answer(text=BOT_LEXICON['successful_end'])
 
@@ -175,15 +176,15 @@ async def not_exclude_emails(message: Message):
 
 @router.message(Command(commands='show_message'), StateFilter(default_state))
 async def show_message_command(message: Message):
-    if message.from_user.id in user_db:
-        await message.answer(
-            text=f'Шаблон: {user_db[message.from_user.id]["template"]}\n'
-                 f'Дата начала: {user_db[message.from_user.id]["start_time"]}\n'
-                 f'Дата конца: {user_db[message.from_user.id]["end_time"]}\n'
-                 f'Иностранным: {user_db[message.from_user.id]["foreign"]}\n'
-                 f'Триальным: {user_db[message.from_user.id]["trial"]}\n'
-                 f'include emails: {user_db[message.from_user.id]["include_emails"]}\n'
-                 f'exclude emails: {user_db[message.from_user.id]["exclude_emails"]}'
-        )
-    else:
-        await message.answer(text=BOT_LEXICON['not_show_message'])
+    last_message = SyncOrm.select_last_message()
+    await message.answer(
+        text=f'Название: {last_message.title}\n'
+             f'Дата начала: {last_message.start_date}\n'
+             f'Дата конца: {last_message.finish_date}\n'
+             f'Иностранным: {last_message.foreign}\n'
+             f'Триальным: {last_message.show_to_trial}\n'
+             f'include emails: '
+             f'{last_message.include_emails if last_message.include_emails is not None else "Всем"}\n'
+             f'exclude emails: '
+             f'{last_message.exclude_emails if last_message.exclude_emails is not None else "Нет"}'
+    )

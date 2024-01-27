@@ -49,19 +49,4 @@ class BroadcastMessages(Base):
     foreign: Mapped[bool] = mapped_column(default=False)
 
 
-# def insert_data():
-#     with session_factory() as session:
-#         message = BroadcastMessages(
-#             id=uuid.uuid4(),
-#             title='qweqwe',
-#             content='asdasdasd',
-#             show_to_trial=False,
-#             start_date='2023-12-26 00:00',
-#             finish_date='2023-12-26 00:00',
-#             creator_id=uuid.uuid4(),
-#             foreign=True
-#         )
-#         session.add_all([message])
-#         session.commit()
-
 

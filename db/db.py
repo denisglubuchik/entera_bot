@@ -15,11 +15,3 @@ class Base(DeclarativeBase):
     type_annotation_map = {
         datetime.datetime: TIMESTAMP(timezone=True),
     }
-
-
-templates_db = {
-    '1': 'qweqweqwe',
-    '2': 'rtyrtyrty'
-}
-
-user_db = {}
