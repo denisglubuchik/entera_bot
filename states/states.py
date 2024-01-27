@@ -9,3 +9,8 @@ class FillTemplate(StatesGroup):
     fill_trial_users = State()
     fill_include_emails = State()
     fill_exclude_emails = State()
+
+
+class NewTemplate(StatesGroup):
+    fill_title = State()
+    fill_content = State()

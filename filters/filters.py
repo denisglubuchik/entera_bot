@@ -1,3 +1,5 @@
+import uuid
+
 from aiogram.filters import BaseFilter
 from aiogram.types import CallbackQuery, Message
 from datetime import datetime
@@ -40,6 +42,11 @@ class IsEmails(BaseFilter):
         return True
 
 
-class IsDigitCallbackData(BaseFilter):
+class IsUUID(BaseFilter):
     async def __call__(self, callback: CallbackQuery):
-        return callback.data.isdigit()
+        uuid_to_valid = callback.data
+        try:
+            uuid_obj = uuid.UUID(uuid_to_valid, version=4)
+        except ValueError:
+            return False
+        return True

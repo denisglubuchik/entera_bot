@@ -3,10 +3,11 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command, CommandStart, StateFilter
 from aiogram.fsm.state import default_state
 from aiogram.fsm.context import FSMContext
-from states.states import FillTemplate
-from filters.filters import IsDate, IsEmails, IsDigitCallbackData
+from states.states import FillTemplate, NewTemplate
+from filters.filters import IsDate, IsEmails, IsUUID
 from lexicon.lexicon_ru import BOT_LEXICON
-from db.db import templates_db, user_db
+from db.db import user_db
+from db.orm import SyncOrm
 from keyboards.keyboards import (create_templates_kb, create_rus_for_kb,
                                  create_trial_kb)
 
@@ -37,24 +38,49 @@ async def cancel_command_state(message: Message, state: FSMContext):
 
 @router.message(Command(commands='templates'), StateFilter(default_state))
 async def templates_command(message: Message):
-    for template in templates_db:
-        await message.answer(text=f'<b>Шаблон {template}</b>\n'
-                                  f'{templates_db[template]}')
+    templates = SyncOrm.select_templates()
+    for template in templates:
+        await message.answer(text=f'<b>Шаблон {template[1]}</b>\n'
+                                  f'{template[2]}')
+
+
+@router.message(Command(commands='new_template'), StateFilter(default_state))
+async def new_template_command(message: Message, state: FSMContext):
+    await message.answer(text=BOT_LEXICON['new_template_title'])
+    await state.set_state(NewTemplate.fill_title)
+
+
+@router.message(StateFilter(NewTemplate.fill_title))
+async def new_template_title(message: Message, state: FSMContext):
+    await state.update_data(title=message.text)
+    await state.set_state(NewTemplate.fill_content)
+    await message.answer(text=BOT_LEXICON['new_template_content'])
+
+
+@router.message(StateFilter(NewTemplate.fill_content))
+async def new_template_content(message: Message, state: FSMContext):
+    await state.update_data(content=message.text)
+    await message.answer(text=BOT_LEXICON['new_template_success'])
+    template = await state.get_data()
+    SyncOrm.insert_new_template(template)
+    await state.clear()
 
 
 @router.message(Command(commands='new_message'), StateFilter(default_state))
 async def new_message_command(message: Message, state: FSMContext):
+    templates = SyncOrm.select_templates()
     await message.answer(text=BOT_LEXICON['new_message'],
-                         reply_markup=create_templates_kb(*templates_db))
+                         reply_markup=create_templates_kb(*templates))
     await state.set_state(FillTemplate.choose_template)
 
 
 @router.callback_query(StateFilter(FillTemplate.choose_template),
-                       IsDigitCallbackData())
+                       IsUUID())
 async def choose_template(callback: CallbackQuery, state: FSMContext):
     await state.update_data(template=callback.data)
+    template = SyncOrm.select_template_by_id(callback.data)[0]
     await callback.message.edit_text(
-        text=f'Вы выбрали шаблон {callback.data}',
+        text=f'Вы выбрали шаблон \n{template}',
     )
     await state.set_state(FillTemplate.fill_start_time)
     await callback.message.answer(text=BOT_LEXICON['start_show'])
@@ -148,7 +174,7 @@ async def not_exclude_emails(message: Message):
 
 
 @router.message(Command(commands='show_message'), StateFilter(default_state))
-async def showdata_command(message: Message):
+async def show_message_command(message: Message):
     if message.from_user.id in user_db:
         await message.answer(
             text=f'Шаблон: {user_db[message.from_user.id]["template"]}\n'

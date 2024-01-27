@@ -7,8 +7,8 @@ def create_templates_kb(*args) -> InlineKeyboardMarkup:
 
     for button in sorted(args):
         kb_builder.row(InlineKeyboardButton(
-            text=f'Шаблон {button}',
-            callback_data=str(button)
+            text=str(button[1]),
+            callback_data=str(button[0])
         ), width=2)
     return kb_builder.as_markup()
 

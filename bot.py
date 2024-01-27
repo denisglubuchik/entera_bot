@@ -1,13 +1,14 @@
 import asyncio
 import logging
 
-# from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from aiogram import Bot, Dispatcher
+
 from config_data.config import Config, load_config
 from handlers import handlers
 from keyboards.main_menu import set_main_menu
 
 logger = logging.getLogger(__name__)
+config: Config = load_config()
 
 
 async def main():
@@ -18,11 +19,6 @@ async def main():
     )
 
     logger.info('Starting bot')
-
-    config: Config = load_config()
-
-    # engine = create_async_engine(url=config.db.db_url)
-    # sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
 
     bot = Bot(token=config.tgbot.token,
               parse_mode='HTML')
