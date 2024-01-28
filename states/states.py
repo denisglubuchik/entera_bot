@@ -11,6 +11,8 @@ class FillTemplate(StatesGroup):
     fill_exclude_emails = State()
 
 
-class NewTemplate(StatesGroup):
+class Template(StatesGroup):
     fill_title = State()
     fill_content = State()
+    accept_template = State()
+    edit_templates = State()

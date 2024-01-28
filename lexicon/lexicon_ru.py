@@ -26,14 +26,22 @@ BOT_LEXICON = {
                         '/new_message, чтобы создать сообщение',
     'new_template_title': 'Напишите название нового шаблона',
     'new_template_content': 'Напишите содержание нового шаблона',
-    'new_template_success': 'Новый шаблон сохранен'
+    'new_template_success': 'Новый шаблон сохранен',
+    'new_template_cancel': 'Шаблон не был сохранен',
+    'edit_templates_button': '❌ РЕДАКТИРОВАТЬ',
+    'del': '❌',
+    'cancel_edit_templates': 'ОТМЕНИТЬ',
+    'edit_templates_command': 'Вот ваши шаблоны, можете их редактировать',
+    'finish_edit_templates': 'ЗАКОНЧИТЬ'
 }
 
 LEXICON_COMMANDS = {
     '/help': 'Справка по работе бота',
     '/templates': 'Список всех шаблонов',
     '/new_template': 'Создать новый шаблон',
+    '/edit_templates': 'Редактировать, удалять шаблоны',
     '/new_message': 'Создать новое сообщение по шаблону',
     '/show_message': 'Показать содержимое отправленного сообщения',
-    '/cancel': 'Отменить отправку шаблона'
+    '/cancel': 'Отменить отправку шаблона',
+    '/show_active_messages': 'Показать активные сообщения'
 }

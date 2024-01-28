@@ -50,3 +50,8 @@ class IsUUID(BaseFilter):
         except ValueError:
             return False
         return True
+
+
+class IsDelTemplate(BaseFilter):
+    async def __call__(self, callback: CallbackQuery):
+        return callback.data.endswith('del')

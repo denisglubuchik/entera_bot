@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc, delete, func
 from sqlalchemy.orm import sessionmaker
 
 from .models import Templates, BotUsers, BroadcastMessages
@@ -38,6 +38,14 @@ class SyncOrm:
         session.add(templ)
         session.commit()
 
+
+    @staticmethod
+    def delete_template(id):
+        with session_factory() as session:
+            stmt = delete(Templates).filter_by(id=id)
+            session.execute(stmt)
+            session.commit()
+
     @staticmethod
     def insert_new_message(message: dict):
         template_uuid = message['template']
@@ -67,4 +75,12 @@ class SyncOrm:
             query = select(BroadcastMessages).order_by(desc(BroadcastMessages.created_date))
             res = session.execute(query).scalars().first()
             return res
+
+
+    @staticmethod
+    def select_active_messages():
+        with session_factory() as session:
+            query = select(BroadcastMessages).filter(BroadcastMessages.finish_date >= func.now())
+            res = session.execute(query)
+            return res.scalars().all()
 
