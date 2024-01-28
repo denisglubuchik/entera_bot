@@ -1,4 +1,4 @@
-version: '3'
+version: '2.3'
 services: 
   bot:
     container_name: bot
@@ -8,6 +8,9 @@ services:
     #depends_on:
     # - postgresql
     #    condition: service_healthy
+    networks:
+      default1:
+        ipv4_address: 192.168.0.11
 
   postgresql:
     container_name: postgres
@@ -18,12 +21,22 @@ services:
       POSTGRES_DB: psql_db
     volumes:
       - ./postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./postgresql/data4:/var/lib/postgresql/data
+      - ./postgresql/data:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      - "5432:5432"
+    networks:
+      default1:
+        ipv4_address: 192.168.0.10
   #  healthcheck:
   #    test: [ "CMD-SHELL", "pg_isready -d postgres -U " ]
   #    interval: 1s
   #    timeout: 1s
   #    retries: 1500
 
+networks:
+  default1:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.0/24

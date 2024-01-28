@@ -39,9 +39,12 @@ async def cancel_command_state(message: Message, state: FSMContext):
 @router.message(Command(commands='templates'), StateFilter(default_state))
 async def templates_command(message: Message):
     templates = SyncOrm.select_templates()
-    for template in templates:
-        await message.answer(text=f'Шаблон {template[1]}\n'
-                                  f'{template[2]}')
+    if templates:
+        for template in templates:
+            await message.answer(text=f'Шаблон {template[1]}\n'
+                                      f'{template[2]}')
+    else:
+        await message.answer('Шаблонов нет')
 
 
 @router.message(Command(commands='new_template'), StateFilter(default_state))
