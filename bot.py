@@ -3,7 +3,7 @@ import logging
 
 from aiogram import Bot, Dispatcher
 
-from config_data.config import config
+from config import config
 from handlers import handlers, template_handlers, broadcast_message_handlers
 from keyboards import set_main_menu
 
