@@ -48,16 +48,17 @@ class SyncOrm:
 
     @staticmethod
     def insert_new_message(message: dict):
-        template_uuid = message['template']
-        template = SyncOrm.select_template_by_id(template_uuid)
-        templ_title = template[0]
-        templ_content = template[1]
+        if 'title' not in message and 'content' not in message:
+            template_uuid = message['template']
+            template = SyncOrm.select_template_by_id(template_uuid)
+            message['title'] = template[0]
+            message['content'] = template[1]
 
         with session_factory() as session:
             new_message = BroadcastMessages(
                 id=uuid.uuid4(),
-                title=templ_title,
-                content=templ_content,
+                title=message['title'],
+                content=message['content'],
                 show_to_trial=message['trial'],
                 start_date=message['start_time'],
                 finish_date=message['end_time'],

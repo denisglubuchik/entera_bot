@@ -18,15 +18,15 @@ class IsDate(BaseFilter):
             datetime.strptime(date, pattern_date)
         except ValueError:
             return False
-        return True
+        return {'date': date}
 
 
 class IsEmails(BaseFilter):
     async def __call__(self, message: Message):
         if message.text.lower().strip() == 'всем':
-            return True
+            return {'email': 'всем'}
         if message.text.lower().strip() == 'нет':
-            return True
+            return {'email': 'нет'}
         emails = message.text.split(', ')
         for email in emails:
             if not validate(
@@ -39,7 +39,7 @@ class IsEmails(BaseFilter):
                 smtp_debug=False
             ):
                 return False
-        return True
+        return {'email': emails}
 
 
 class IsUUID(BaseFilter):

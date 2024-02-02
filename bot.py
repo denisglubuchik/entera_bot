@@ -3,12 +3,12 @@ import logging
 
 from aiogram import Bot, Dispatcher
 
-from config_data.config import Config, load_config
-from handlers import handlers
-from keyboards.main_menu import set_main_menu
+from config_data.config import config
+from handlers import handlers, template_handlers, broadcast_message_handlers
+from keyboards import set_main_menu
 
 logger = logging.getLogger(__name__)
-config: Config = load_config()
+# config: Config = load_config()
 
 
 async def main():
@@ -24,6 +24,8 @@ async def main():
 
     dp = Dispatcher()
     dp.include_router(handlers.router)
+    dp.include_router(template_handlers.router)
+    dp.include_router(broadcast_message_handlers.router)
 
     await set_main_menu(bot)
 

@@ -5,7 +5,8 @@ BOT_LEXICON = {
             ' не сохраняются)',
     'cancel_default': 'Вы сейчас не редактируете никакой шаблон',
     'cancel_state': 'Вы вышли из редактирования шаблона',
-    'new_message': 'Выберите шаблон сообщения',
+    'new_message': 'Создать новое сообщение или выбрать шаблон',
+    'choose_template': 'Выберите шаблон',
     'start_show': 'Введите время начала показа сообщения в формате\n'
                   '"2023-12-26 00:00"',
     'end_show': 'Введите время конца показа сообщения в формате\n'
@@ -28,11 +29,15 @@ BOT_LEXICON = {
     'new_template_content': 'Напишите содержание нового шаблона',
     'new_template_success': 'Новый шаблон сохранен',
     'new_template_cancel': 'Шаблон не был сохранен',
+    'title': 'Введите название',
+    'content': 'Введите содержимое сообщения',
     'edit_templates_button': '❌ РЕДАКТИРОВАТЬ',
     'del': '❌',
     'cancel_edit_templates': 'ОТМЕНИТЬ',
     'edit_templates_command': 'Вот ваши шаблоны, можете их редактировать',
-    'finish_edit_templates': 'ЗАКОНЧИТЬ'
+    'finish_edit_templates': 'ЗАКОНЧИТЬ',
+    'save': 'Выберите способ сохранения',
+    'no_active_messages': 'Нет активных сообщений'
 }
 
 LEXICON_COMMANDS = {

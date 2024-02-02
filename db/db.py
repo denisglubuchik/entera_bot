@@ -2,7 +2,10 @@ import datetime
 
 from sqlalchemy import create_engine, TIMESTAMP
 from sqlalchemy.orm import DeclarativeBase
-from bot import config
+from config_data.config import config
+
+
+# config: Config = load_config('.env')
 
 db = config.db
 engine = create_engine(

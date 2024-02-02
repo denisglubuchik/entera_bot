@@ -9,7 +9,7 @@ def create_templates_kb(*args, edit=None) -> InlineKeyboardMarkup:
     for button in sorted(args):
         kb_builder.row(InlineKeyboardButton(
             text=str(button[1]),
-            callback_data=str(button[0])
+            callback_data=str(button[0])  # uuid
         ), width=2)
 
     if edit:
@@ -20,6 +20,11 @@ def create_templates_kb(*args, edit=None) -> InlineKeyboardMarkup:
             text=BOT_LEXICON['cancel_edit_templates'],
             callback_data='cancel_edit_templates'
         ), width=2)
+    else:
+        kb_builder.row(InlineKeyboardButton(
+            text='Назад',
+            callback_data='back'
+        ))
     return kb_builder.as_markup()
 
 
@@ -34,6 +39,19 @@ def create_edit_template_kb(*args) -> InlineKeyboardMarkup:
     kb_builder.row(InlineKeyboardButton(
         text=BOT_LEXICON['finish_edit_templates'],
         callback_data='cancel_edit_templates'
+    ))
+    return kb_builder.as_markup()
+
+
+def create_new_or_template_kb() -> InlineKeyboardMarkup:
+    kb_builder = InlineKeyboardBuilder()
+
+    kb_builder.row(InlineKeyboardButton(
+        text='Новое',
+        callback_data='new'
+    ), InlineKeyboardButton(
+        text='Выбрать шаблон',
+        callback_data='template'
     ))
     return kb_builder.as_markup()
 
@@ -78,3 +96,18 @@ def create_save_template_kb() ->InlineKeyboardMarkup:
         ), width=2
     )
     return kb_builder.as_markup()
+
+
+def create_save_message_kb() -> InlineKeyboardMarkup:
+    kb_buider = InlineKeyboardBuilder()
+    kb_buider.row(InlineKeyboardButton(
+        text='Отправить',
+        callback_data='send_message'
+    ), InlineKeyboardButton(
+        text='Сохранить и отправить',
+        callback_data='save_template_send'
+    ), InlineKeyboardButton(
+        text='Отмена',
+        callback_data='cancel'
+    ), width=1)
+    return kb_buider.as_markup()

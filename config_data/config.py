@@ -24,7 +24,7 @@ class Config:
 
 def load_config(path: str | None = None):
     env = Env()
-    env.read_env(path)
+    env.read_env(path=path)
     return Config(tgbot=TgBot(token=env('BOT_TOKEN')),
                   db=Db(
                       db_name=env('DB_NAME'),
@@ -33,3 +33,6 @@ def load_config(path: str | None = None):
                       pg_admin=env('PGADMIN_USER'),
                       pg_admin_password=env('PGADMIN_PASSWORD')
                   ))
+
+
+config: Config = load_config('.env')
