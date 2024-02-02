@@ -15,6 +15,13 @@ from db import SyncOrm
 router = Router()
 
 
+async def is_template(state: FSMContext) -> bool:
+    data = await state.get_data()
+    if 'template' not in data:
+        return True
+    return False
+
+
 @router.message(Command(commands='new_message'), StateFilter(default_state))
 async def new_message_command(message: Message, state: FSMContext):
     await message.answer(text=BOT_LEXICON['new_message'],
@@ -129,8 +136,9 @@ async def include_emails(message: Message, state: FSMContext, email: list | str)
                                 exclude_emails=None)
 
         await  state.set_state(FillTemplate.fill_save_or_not)
+        save_and_send = await is_template(state)
         await message.answer(text=BOT_LEXICON['save'],
-                             reply_markup=create_save_message_kb())
+                             reply_markup=create_save_message_kb(save_and_send=save_and_send))
     else:
         await state.update_data(include_emails=None)
         await message.answer(text=BOT_LEXICON['exclude_emails'])
@@ -150,8 +158,9 @@ async def exclude_emails(message: Message, state: FSMContext, email: list | str)
         await state.update_data(exclude_emails=None)
 
     await  state.set_state(FillTemplate.fill_save_or_not)
+    save_and_send = await is_template(state)
     await message.answer(text=BOT_LEXICON['save'],
-                         reply_markup=create_save_message_kb())
+                         reply_markup=create_save_message_kb(save_and_send=save_and_send))
 
 
 @router.message(StateFilter(FillTemplate.fill_exclude_emails))

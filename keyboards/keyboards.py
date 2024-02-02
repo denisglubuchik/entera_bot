@@ -98,14 +98,16 @@ def create_save_template_kb() ->InlineKeyboardMarkup:
     return kb_builder.as_markup()
 
 
-def create_save_message_kb() -> InlineKeyboardMarkup:
+def create_save_message_kb(save_and_send=False) -> InlineKeyboardMarkup:
     kb_buider = InlineKeyboardBuilder()
+    if save_and_send is True:
+        kb_buider.row(InlineKeyboardButton(
+            text='Сохранить и отправить',
+            callback_data='save_template_send'
+    ))
     kb_buider.row(InlineKeyboardButton(
         text='Отправить',
         callback_data='send_message'
-    ), InlineKeyboardButton(
-        text='Сохранить и отправить',
-        callback_data='save_template_send'
     ), InlineKeyboardButton(
         text='Отмена',
         callback_data='cancel'
